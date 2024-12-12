@@ -1,0 +1,17 @@
+services:
+  2d-gaussian-splatting:
+    image: irchslu/2d-gaussian-splatting
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - ./data:/data
+      
+
