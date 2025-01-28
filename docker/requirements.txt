@@ -15,3 +15,5 @@ opencv-python-headless
 # Local submodules
 -e submodules/diff-surfel-rasterization
 -e submodules/simple-knn
+-e submodules/Propagation
+-e submodules/fused-ssim
