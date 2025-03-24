@@ -12,13 +12,30 @@ WORKDIR /2D-Gaussian-Splatting
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    git \
+    software-properties-common \
     wget \
-    ffmpeg \
+    git \
+    gcc \
+    colmap \
+    curl \
+    cmake \
     build-essential \
-    libgl1-mesa-glx \
     libglib2.0-0 \
+    libsm6 \
+    libtbb2-dev\
+    libtiff-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libxext6 \
+    libxrender-dev \
+    libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
+
+
+# Install mvs-texturing
+RUN git clone https://github.com/nmoehrle/mvs-texturing.git /tmp/mvs-texturing
+RUN cd /tmp/mvs-texturing && mkdir build && cd build && cmake .. && make -j
+RUN cp /tmp/mvs-texturing/build/apps/texrecon/texrecon /usr/local/bin/ && rm -rf /tmp/mvs-texturing
 
 # Install python dependencies
 RUN pip install --upgrade pip

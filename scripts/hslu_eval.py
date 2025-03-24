@@ -8,6 +8,7 @@ scenes = ['alanturing0.5x', 'alanturing1.0x',
 parser = ArgumentParser(description="Full evaluation script parameters")
 parser.add_argument("--skip_training", action="store_true")
 parser.add_argument("--skip_rendering", action="store_true")
+parser.add_argument("--skip_texrecon_preparation", action="store_true")
 parser.add_argument("--skip_texrecon", action="store_true")
 parser.add_argument("--output_path", default="/data/hslu/eval")
 parser.add_argument('--dtu', "-dtu", required=True, type=str)
@@ -34,7 +35,17 @@ for scene in scenes:
         print("python render.py --iteration 30000 -s " + source + " -m" + args.output_path + "/" + scene + rendering_args)
         os.system("python render.py --iteration 30000 -s " + source + " -m" + args.output_path + "/" + scene + rendering_args)
 
+    if not args.skip_texrecon_preparation:
+        print("python prepare_texrecon.py --input_dir " + source + " --output_dir " + args.output_path + "/" + scene)
+        os.system("python prepare_texrecon.py --input_dir " + source + " --output_dir " + args.output_path + "/" + scene)
+        # texrecon ./images ./fused_mesh.ply ./textured_mesh --outlier_removal=gauss_clamping --data_term=area --no_intermediate_results
+
     if not args.skip_texrecon:
-        print("python prepare_texrecon.py -s " + source + " -m " + args.output_path + "/" + scene)
-        os.system("python prepare_texrecon.py -s " + source + " -m " + args.output_path + "/" + scene)
+        texture_images_and_cameras = args.output_path + "/" + scene + "/texrecon/camera_poses"
+        texturing_input_mesh = args.output_path + "/" + scene + "/train/ours_30000/fuse_post.ply"
+        textured_mesh_output = args.output_path + "/" + scene + "/texrecon/textured_mesh"
+        print("texrecon " + texture_images_and_cameras + " " + texturing_input_mesh + " " + textured_mesh_output + " --outlier_removal=gauss_clamping --data_term=area --no_intermediate_results")
+        os.system("texrecon " + texture_images_and_cameras + " " + texturing_input_mesh + " " + textured_mesh_output + " --outlier_removal=gauss_clamping --data_term=area --no_intermediate_results")
+
+    
     
