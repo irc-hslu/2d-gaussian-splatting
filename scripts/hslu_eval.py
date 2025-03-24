@@ -36,8 +36,8 @@ for scene in scenes:
         os.system("python render.py --iteration 30000 -s " + source + " -m" + args.output_path + "/" + scene + rendering_args)
 
     if not args.skip_texrecon_preparation:
-        print("python prepare_texrecon.py --input_dir " + source + " --output_dir " + args.output_path + "/" + scene)
-        os.system("python prepare_texrecon.py --input_dir " + source + " --output_dir " + args.output_path + "/" + scene)
+        print("python prepare_texrecon.py --input_dir " + source + " --output_dir " + args.output_path + "/" + scene + " --resolution 2000")
+        os.system("python prepare_texrecon.py --input_dir " + source + " --output_dir " + args.output_path + "/" + scene + " --resolution 2000")
         # texrecon ./images ./fused_mesh.ply ./textured_mesh --outlier_removal=gauss_clamping --data_term=area --no_intermediate_results
 
     if not args.skip_texrecon:
