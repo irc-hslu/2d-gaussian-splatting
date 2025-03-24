@@ -38,6 +38,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_cluster", default=50, type=int, help='Mesh: number of connected clusters to export')
     parser.add_argument("--unbounded", action="store_true", help='Mesh: using unbounded mode for meshing')
     parser.add_argument("--mesh_res", default=1024, type=int, help='Mesh: resolution for unbounded mesh extraction')
+    parser.add_argument("--skip_vertex_colors", action="store_true", help='Mesh: skip vertex colors')
     args = get_combined_args(parser)
     print("Rendering " + args.model_path)
 
@@ -50,7 +51,8 @@ if __name__ == "__main__":
 
     train_dir = os.path.join(args.model_path, 'train', "ours_{}".format(scene.loaded_iter))
     test_dir = os.path.join(args.model_path, 'test', "ours_{}".format(scene.loaded_iter))
-    gaussExtractor = GaussianExtractor(gaussians, render, pipe, bg_color=bg_color)
+    color_mode = "rgb" if not args.skip_vertex_colors else None
+    gaussExtractor = GaussianExtractor(gaussians, render, pipe, bg_color=bg_color, color_mode=color_mode)
 
     if not args.skip_train:
         print("export training images ...")

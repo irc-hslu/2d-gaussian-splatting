@@ -35,10 +35,19 @@ if __name__ == "__main__":
         for img_name in tqdm(os.listdir(images_dir)):
             img_path = os.path.join(images_dir, img_name)
             img = Image.open(img_path)
+
+            # args.resolution is max resolution of the smaller side
+
+            
+            new_res = img.size
             if img.width > img.height:
-                img = img.resize((args.resolution, int(args.resolution * img.height / img.width)))
+                if img.height > args.resolution:
+                    new_res = (int(args.resolution * img.width / img.height), args.resolution)
             else:
-                img = img.resize((int(args.resolution * img.width / img.height), args.resolution))
+                if img.width > args.resolution:
+                    new_res = (args.resolution, int(args.resolution * img.height / img.width))
+
+            img = img.resize(new_res)
             img.save(os.path.join(output_images_dir, img_name))
 
 
