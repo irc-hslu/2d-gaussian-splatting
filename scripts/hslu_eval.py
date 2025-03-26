@@ -14,8 +14,8 @@ scenes = {
     "peterskapelle1.0x": {"depth_trunc": 10, "mesh_res": 512},
     "s1meetingroom0.5x": {"depth_trunc": 6.5, "mesh_res": 384},
     "s1meetingroom1.0x": {"depth_trunc": 6.5, "mesh_res": 384},
-    "s1outside0.5x": {"unbounded": True, "mesh_res": 1024},
-    "s1outside1.0x": {"unbounded": True, "mesh_res": 1024},
+    "s1outside0.5x": {"depth_trunc": 50, "mesh_res": 1024},
+    "s1outside1.0x": {"depth_trunc": 50, "mesh_res": 1024},
 }
 
 
