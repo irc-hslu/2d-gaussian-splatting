@@ -57,15 +57,17 @@ if __name__ == "__main__":
     if not args.skip_train:
         print("export training images ...")
         os.makedirs(train_dir, exist_ok=True)
-        gaussExtractor.reconstruction(scene.getTrainCameras())
-        gaussExtractor.export_image(train_dir)
+        gaussExtractor.set_viewpoints(scene.getTrainCameras())
+        rec = gaussExtractor.reconstruction()
+        gaussExtractor.export_image(rec, train_dir)
 
 
     if (not args.skip_test) and (len(scene.getTestCameras()) > 0):
         print("export rendered testing images ...")
         os.makedirs(test_dir, exist_ok=True)
-        gaussExtractor.reconstruction(scene.getTestCameras())
-        gaussExtractor.export_image(test_dir)
+        gaussExtractor.set_viewpoints(scene.getTestCameras())
+        rec = gaussExtractor.reconstruction()
+        gaussExtractor.export_image(rec, test_dir)
 
 
     if args.render_path:
@@ -74,8 +76,9 @@ if __name__ == "__main__":
         os.makedirs(traj_dir, exist_ok=True)
         n_fames = 240
         cam_traj = generate_path(scene.getTrainCameras(), n_frames=n_fames)
-        gaussExtractor.reconstruction(cam_traj)
-        gaussExtractor.export_image(traj_dir)
+        gaussExtractor.set_viewpoints(cam_traj)
+        rec = gaussExtractor.reconstruction()
+        gaussExtractor.export_image(rec, traj_dir)
         create_videos(base_dir=traj_dir,
                     input_dir=traj_dir,
                     out_name='render_traj',
@@ -86,12 +89,14 @@ if __name__ == "__main__":
         os.makedirs(train_dir, exist_ok=True)
         # set the active_sh to 0 to export only diffuse texture
         gaussExtractor.gaussians.active_sh_degree = 0
-        rec = gaussExtractor.reconstruction(scene.getTrainCameras())
+        gaussExtractor.set_viewpoints(scene.getTrainCameras())
+
         # extract the mesh and save
         if args.unbounded:
             name = 'fuse_unbounded.ply'
             mesh = gaussExtractor.extract_mesh_unbounded(resolution=args.mesh_res)
         else:
+            rec = gaussExtractor.reconstruction()
             name = 'fuse.ply'
             depth_trunc = (gaussExtractor.radius * 2.0) if args.depth_trunc < 0  else args.depth_trunc
             voxel_size = (depth_trunc / args.mesh_res) if args.voxel_size < 0 else args.voxel_size
