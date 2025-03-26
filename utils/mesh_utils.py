@@ -72,7 +72,8 @@ def to_cam_open3d(viewpoint_stack):
 
 
 class GaussianExtractor(object):
-    def __init__(self, gaussians, render, pipe, bg_color=None):
+    def __init__(self, gaussians, render, pipe, color_mode="rgb",
+                 bg_color=None):
         """
         a class that extracts attributes a scene presented by 2DGS
 
@@ -86,6 +87,7 @@ class GaussianExtractor(object):
         background = torch.tensor(bg_color, dtype=torch.float32, device="cuda")
         self.gaussians = gaussians
         self.render = partial(render, pipe=pipe, bg_color=background)
+        self.color_mode = color_mode
         self.clean()
 
     @torch.no_grad()
@@ -147,10 +149,17 @@ class GaussianExtractor(object):
         print(f'sdf_trunc: {sdf_trunc}')
         print(f'depth_truc: {depth_trunc}')
 
+        if self.color_mode == "rgb":
+            color_type = o3d.pipelines.integration.TSDFVolumeColorType.RGB8
+        elif self.color_mode == "gray":
+            color_type = o3d.pipelines.integration.TSDFVolumeColorType.Gray32
+        else:
+            color_type = o3d.pipelines.integration.TSDFVolumeColorType.NoColor
+
         volume = o3d.pipelines.integration.ScalableTSDFVolume(
             voxel_length= voxel_size,
             sdf_trunc=sdf_trunc,
-            color_type=o3d.pipelines.integration.TSDFVolumeColorType.RGB8
+            color_type=color_type,
         )
 
         #for i, cam_o3d in tqdm(enumerate(to_cam_open3d(self.viewpoint_stack)), desc="TSDF integration progress"):

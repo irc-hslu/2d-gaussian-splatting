@@ -1,9 +1,26 @@
 import os
 from argparse import ArgumentParser
 
-scenes = ['alanturing0.5x', 'alanturing1.0x',
-            'audimax0.5x', 'audimax1.0x', 'interactionspace0.5x', 'interactionspace1.0x', 'officespace0.5x', 'officespace1.0x', 'peterskapelle0.5x',
-              'peterskapelle1.0x', 's1meetingroom0.5x', 's1meetingroom1.0x', 's1outside0.5x', 's1outside1.0x', 'Peterskapelle0.5x.MOV_frames', 'Peterskapelle1.0x.MOV_frames']
+scenes = {
+    "alanturing0.5x": {"depth_trunc": 6.5, "mesh_res": 384},
+    "alanturing1.0x": {"depth_trunc": 6.5, "mesh_res": 384},
+    "audimax0.5x": {"depth_trunc": 6.5, "mesh_res": 384},
+    "audimax1.0x": {"depth_trunc": 6.5, "mesh_res": 384},
+    "interactionspace0.5x": {"depth_trunc": 15, "mesh_res": 512},
+    "interactionspace1.0x": {"depth_trunc": 15, "mesh_res": 512},
+    "officespace0.5x": {"depth_trunc": 15, "mesh_res": 512},
+    "officespace1.0x": {"depth_trunc": 15, "mesh_res": 512},
+    "peterskapelle0.5x": {"depth_trunc": 10, "mesh_res": 512},
+    "peterskapelle1.0x": {"depth_trunc": 10, "mesh_res": 512},
+    "s1meetingroom0.5x": {"depth_trunc": 6.5, "mesh_res": 384},
+    "s1meetingroom1.0x": {"depth_trunc": 6.5, "mesh_res": 384},
+    "s1outside0.5x": {"depth_trunc": 30, "mesh_res": 1024},
+    "s1outside1.0x": {"depth_trunc": 30, "mesh_res": 1024},
+    "Peterskapelle0.5x.MOV_frames": {"depth_trunc": 10, "mesh_res": 512},
+    "Peterskapelle1.0x.MOV_frames": {"depth_trunc": 10, "mesh_res": 512},
+}
+
+
 
 parser = ArgumentParser(description="Full evaluation script parameters")
 parser.add_argument("--skip_training", action="store_true")
@@ -14,17 +31,16 @@ parser.add_argument("--output_path", default="/data/hslu/eval")
 parser.add_argument('--dtu', "-dtu", required=True, type=str)
 args, _ = parser.parse_known_args()
 
-all_scenes = []
-all_scenes.extend(scenes)
-
 
 args = parser.parse_args()
 
 
-for scene in scenes:
+for scene in scenes.keys():
+    print("Processing scene " + scene)
     train_args = " --quiet --test_iterations -1"
     # Used values from tnt large scenes. Cannot use mesh_res 1024 as it is too large for the CPU memory (could be optimized).
-    rendering_args = " --quiet --skip_train --skip_test --depth_trunc 15 --mesh_res 512 --skip_vertex_colors" #--voxel_size 0.004 --sdf_trunc 0.016 
+    #rendering_args = " --quiet --skip_train --skip_test --depth_trunc 12 --voxel_size 0.025 --skip_vertex_colors" #--voxel_size 0.004 --sdf_trunc 0.016 --mesh_res 1024 
+    rendering_args = " --quiet --skip_train --skip_test --depth_trunc " + str(scenes[scene]["depth_trunc"]) + " --skip_vertex_colors --mesh_res " + str(scenes[scene]["mesh_res"]) 
     source = args.dtu + "/" + scene
 
     if not args.skip_training:
